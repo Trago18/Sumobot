@@ -15,7 +15,7 @@
 
 /* ===================== APERTURA (modo de combate) ===================== */
 /* 1 = ataque directo (recomendado); 2 = giro 180° derecha y push; 3 = 180° invertido */
-#define COMBATE_MODE 3   // <- si quieres la alternativa de “trampa”, usa 2 o 3
+#define COMBATE_MODE 1   // <- si quieres la alternativa de “trampa”, usa 2 o 3
 
 /* ===================== DEBUG (imprime por Serial) ===================== */
 #define DEBUG_SERIAL 1
@@ -457,11 +457,28 @@ void loop() {
   }
 
   #if DEBUG_SERIAL
+    // ====== MONITOREO DE SENSORES ======
     DBG_PRINT("IR[");
     DBG_PRINT(analogRead(SEN_FL)); DBG_PRINT(' ');
     DBG_PRINT(analogRead(SEN_FR)); DBG_PRINT(' ');
     DBG_PRINT(analogRead(SEN_RL)); DBG_PRINT(' ');
     DBG_PRINT(analogRead(SEN_RR)); DBG_PRINT("]  ");
+
+    long distUS = measureDistanceCMMedian();
+    long distL = tofOK ? readToFmm(tofLeft) : -1;
+    long distR = tofOK ? readToFmm(tofRight) : -1;
+
+    DBG_PRINT("  US: "); DBG_PRINT(distUS); DBG_PRINT("cm  ");
+    DBG_PRINT("ToF[L:R]= ");
+    DBG_PRINT(distL); DBG_PRINT(" / ");
+    DBG_PRINT(distR); DBG_PRINT(" mm  ");
+
+    DBG_PRINT("  Estado: ");
+    switch (estado) {
+      case Estado::APERTURA: DBG_PRINT("APERTURA"); break;
+      case Estado::BUSCAR:   DBG_PRINT("BUSCAR");   break;
+      case Estado::ATACAR:   DBG_PRINT("ATACAR");   break;
+    }
     DBG_PRINTLN("");
   #endif
 
